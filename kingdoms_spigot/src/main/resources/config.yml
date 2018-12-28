@@ -1,0 +1,29 @@
+#########################
+## Multicraft Settings ##
+#########################
+
+api_url: "https://panel.example.com/api.php"
+api_key: "secret"
+
+#######################
+## API Host Settings ##
+#######################
+
+driver_url: "https://lucasvanborkulo.nl/kingdoms"
+
+####################
+## MySQL Settings ##
+####################
+
+mysql_host: '127.0.0.1'
+mysql_port: 3306
+mysql_database: 'kingdoms'
+mysql_user: 'root'
+mysql_password: 'toor'
+mysql_table_name: 'kingdom_data'
+
+###################
+## Misc Settings ##
+###################
+
+cache_refresh_delay: 15

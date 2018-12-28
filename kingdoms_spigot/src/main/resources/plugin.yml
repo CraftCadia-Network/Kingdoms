@@ -1,0 +1,7 @@
+name: kingdoms_spigot
+version: 1.0
+main: me.lucasvanborkulo.kingdoms.Main
+author: Lucas van Borkulo
+commands:
+  kingdoms:
+    aliases: [king]
