@@ -4,7 +4,7 @@ import me.lucasvanborkulo.kingdoms.Commons;
 import me.lucasvanborkulo.kingdoms.Main;
 import me.lucasvanborkulo.kingdoms.tier.Tier;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.sql.*;
@@ -16,6 +16,10 @@ public class MySQLDriver {
 
     private Connection connection;
 
+    /*
+     * MySQL Credentials
+     */
+
     private String mysql_host;
     private Integer mysql_port;
     private String mysql_database;
@@ -23,11 +27,14 @@ public class MySQLDriver {
     private String mysql_password;
     private String mysql_table_name;
 
-
     public MySQLDriver(Main main) {
         this.main = main;
         this.initialize();
     }
+
+    /*
+     * This is used for initializing the MySQLs driver.
+     */
 
     private void initialize() {
         Commons.logAction("Initializing the MySQL driver...");
@@ -43,10 +50,14 @@ public class MySQLDriver {
             Commons.logAction("Successfully initialized the MySQL driver!");
         } else {
             Commons.logAction("Failed to initialize the MySQL driver!");
-
+            Bukkit.getPluginManager().disablePlugin(this.main);
         }
         this.createTableIfNotExists();
     }
+
+    /*
+     * This is used for connecting to the database
+     */
 
     public boolean connect() {
         try {
@@ -57,8 +68,12 @@ public class MySQLDriver {
         }
     }
 
+    /*
+     * This is used for creating a table if it doesn't exist.
+     */
+
     public void createTableIfNotExists() {
-        Commons.logAction("Creating a table called '" + this.mysql_table_name + "'....");
+        Commons.logAction("Attempting to create a table called '" + this.mysql_table_name + "'...");
         try {
             String sqlCreate = "CREATE TABLE IF NOT EXISTS `" + this.mysql_table_name + "` (\n" +
                     "`uuid` varchar(255) NOT NULL," +
@@ -77,6 +92,10 @@ public class MySQLDriver {
         Commons.logAction("Successfully created the '" + this.mysql_table_name + "' table!");
     }
 
+    /*
+     * This is used for checking if the database contains a Player.
+     */
+
     private boolean playerExists(UUID uuid) {
         try {
             PreparedStatement statement = this.connection
@@ -85,16 +104,18 @@ public class MySQLDriver {
 
             ResultSet results = statement.executeQuery();
             if (results.next()) {
-                Bukkit.broadcastMessage(ChatColor.YELLOW + "Player Found");
                 return true;
             }
-            Bukkit.broadcastMessage(ChatColor.RED + "Player NOT Found");
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
     }
+
+    /*
+     * This is used for inserting a Player into a database.
+     */
 
     public void insertPlayer(Player player) {
         UUID uuid = player.getUniqueId();
@@ -113,20 +134,17 @@ public class MySQLDriver {
                 insert.setString(3, "none");
                 insert.setInt(4, -1);
                 insert.executeUpdate();
-
-                Bukkit.broadcastMessage(ChatColor.GREEN + "Player Inserted");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    /*
+     * This is used for getting a value from the database.
+     */
 
-    public void setValue(String key, String columnName, String value) {
-
-    }
-
-    public Object getValue(Player bukkitPlayer, String key) {
+    public Object getValue(OfflinePlayer bukkitPlayer, String key) {
         try {
             PreparedStatement statement = this.connection
                     .prepareStatement("SELECT * FROM " + this.mysql_table_name + " WHERE uuid=?");
@@ -140,8 +158,49 @@ public class MySQLDriver {
         return null;
     }
 
+    /*
+     * This is used for getting the server tier by the server ID.
+     */
 
-    public void setValue(Player bukkitPlayer, String key, String value) {
+    public Tier getTierByServerID(Integer server_id) {
+        try {
+            PreparedStatement statement = this.connection
+                    .prepareStatement("SELECT * FROM " + this.mysql_table_name + " WHERE server_id=?");
+            statement.setString(1, server_id + "");
+            ResultSet results = statement.executeQuery();
+            results.next();
+            String tierString = results.getString("tier");
+            return Tier.valueOf(tierString);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /*
+     * This is used for getting the creator by the server ID.
+     */
+
+    public OfflinePlayer getCreatorByServerID(Integer server_id) {
+        try {
+            PreparedStatement statement = this.connection
+                    .prepareStatement("SELECT * FROM " + this.mysql_table_name + " WHERE server_id=?");
+            statement.setString(1, server_id + "");
+            ResultSet results = statement.executeQuery();
+            results.next();
+            String uuidString = results.getString("uuid");
+            return Bukkit.getOfflinePlayer(uuidString);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /*
+     * This is used for setting a value in the Database.
+     */
+
+    public void setValue(OfflinePlayer bukkitPlayer, String key, String value) {
         try {
             PreparedStatement statement = this.connection
                     .prepareStatement("UPDATE " + this.mysql_table_name + " SET " + key + "=? WHERE uuid=?");
@@ -151,6 +210,5 @@ public class MySQLDriver {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
     }
 }

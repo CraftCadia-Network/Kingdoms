@@ -5,12 +5,6 @@
 api_url: "https://panel.example.com/api.php"
 api_key: "secret"
 
-#######################
-## API Host Settings ##
-#######################
-
-driver_url: "https://lucasvanborkulo.nl/kingdoms"
-
 ####################
 ## MySQL Settings ##
 ####################
@@ -22,8 +16,8 @@ mysql_user: 'root'
 mysql_password: 'toor'
 mysql_table_name: 'kingdom_data'
 
-###################
-## Misc Settings ##
-###################
+#######################
+## API Host Settings ##
+#######################
 
-cache_refresh_delay: 15
+driver_url: "https://lucasvanborkulo.nl/kingdoms"

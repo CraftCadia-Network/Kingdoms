@@ -1,11 +1,7 @@
-package me.lucasvanborkulo.kingdoms.tier;
+package me.lucasvanborkulo.server.tier;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-
-/*
- * This enum is used for the Tier of the server.
- */
 
 public enum Tier {
 
